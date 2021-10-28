@@ -11832,6 +11832,8 @@ let dirtOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile 
 let dirt;
 let groundOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/ground.obj');
 let ground;
+let appleOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/apple.obj');
+let apple;
 function loadScene(seed, branchThickness) {
     square = new __WEBPACK_IMPORTED_MODULE_3__geometry_Square__["a" /* default */]();
     square.create();
@@ -11843,10 +11845,12 @@ function loadScene(seed, branchThickness) {
     leaf.create();
     pot = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](potOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
     pot.create();
-    dirt = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](dirtOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 2.0, 0.0));
+    dirt = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](dirtOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
     dirt.create();
     ground = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](groundOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
     ground.create();
+    apple = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](appleOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
+    apple.create();
     // Create plant
     let plant = new __WEBPACK_IMPORTED_MODULE_10__lsystem_Plant__["a" /* default */]("TTTTTTTTX", controls.iterations, 30.0, seed, branchThickness);
     plant.create();
@@ -11924,6 +11928,43 @@ function loadScene(seed, branchThickness) {
     let leafTransform4 = new Float32Array(leafTransform4Array);
     leaf.setInstanceVBOs(leafColors, leafTransform1, leafTransform2, leafTransform3, leafTransform4);
     leaf.setNumInstances(plant.leafTransformationMats.length);
+    // Set up instanced rendering data arrays for apple
+    let appleNum = plant.appleTransformationMats.length;
+    let appleColorsArray = [];
+    let appleTransform1Array = [];
+    let appleTransform2Array = [];
+    let appleTransform3Array = [];
+    let appleTransform4Array = [];
+    for (let i = 0; i < appleNum; i++) {
+        let T = plant.appleTransformationMats[i];
+        appleTransform1Array.push(T[0]);
+        appleTransform1Array.push(T[1]);
+        appleTransform1Array.push(T[2]);
+        appleTransform1Array.push(T[3]);
+        appleTransform2Array.push(T[4]);
+        appleTransform2Array.push(T[5]);
+        appleTransform2Array.push(T[6]);
+        appleTransform2Array.push(T[7]);
+        appleTransform3Array.push(T[8]);
+        appleTransform3Array.push(T[9]);
+        appleTransform3Array.push(T[10]);
+        appleTransform3Array.push(T[11]);
+        appleTransform4Array.push(T[12]);
+        appleTransform4Array.push(T[13]);
+        appleTransform4Array.push(T[14]);
+        appleTransform4Array.push(1);
+        appleColorsArray.push(185.0 / 255.0);
+        appleColorsArray.push(25.0 / 255.0);
+        appleColorsArray.push(7.0 / 255.0);
+        appleColorsArray.push(1.0);
+    }
+    let appleColors = new Float32Array(appleColorsArray);
+    let appleTransform1 = new Float32Array(appleTransform1Array);
+    let appleTransform2 = new Float32Array(appleTransform2Array);
+    let appleTransform3 = new Float32Array(appleTransform3Array);
+    let appleTransform4 = new Float32Array(appleTransform4Array);
+    apple.setInstanceVBOs(appleColors, appleTransform1, appleTransform2, appleTransform3, appleTransform4);
+    apple.setNumInstances(appleNum);
     // Set up instanced rendering data arrays for pot
     let potNum = 1;
     let potColorsArray = [];
@@ -12000,7 +12041,7 @@ function loadScene(seed, branchThickness) {
     let dirtTransform4 = new Float32Array(dirtTransform4Array);
     dirt.setInstanceVBOs(dirtColors, dirtTransform1, dirtTransform2, dirtTransform3, dirtTransform4);
     dirt.setNumInstances(dirtNum);
-    // Set up instanced rendering data arrays for pot
+    // Set up instanced rendering data arrays for ground
     let groundNum = 1;
     let groundColorsArray = [];
     let groundTransform1Array = [];
@@ -12102,6 +12143,7 @@ function main() {
             pot,
             ground,
             dirt,
+            apple,
         ]);
         stats.end();
         // Tell the browser to call `tick` again whenever it renders a new frame
@@ -22667,6 +22709,7 @@ class Plant {
         this.positions = new Array();
         this.transformationMats = new Array();
         this.leafTransformationMats = new Array();
+        this.appleTransformationMats = new Array();
         this.lsystem = new __WEBPACK_IMPORTED_MODULE_1__LSystem__["a" /* default */](axiom, branchThickness);
         this.depth = depth;
         this.angle = angle;
@@ -22677,6 +22720,7 @@ class Plant {
     drawForward() {
         let turtle = this.lsystem.currTurtle;
         turtle.isLeaf = false;
+        turtle.isApple = false;
         let turtlePos = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec4 */].fromValues(turtle.pos[0], turtle.pos[1], turtle.pos[2], turtle.pos[3]);
         let transformMat = turtle.getTransformationMatrix();
         this.positions.push(turtlePos);
@@ -22686,15 +22730,33 @@ class Plant {
     drawLeaf() {
         let turtle = this.lsystem.currTurtle;
         turtle.isLeaf = true;
+        turtle.isApple = false;
         let transformMat = turtle.getTransformationMatrix();
         let I = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create();
         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].identity(I);
         let randomRotation = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create();
-        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].rotateX(randomRotation, I, Math.random() * 30);
-        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].rotateY(randomRotation, randomRotation, Math.random() * 30);
-        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].rotateZ(randomRotation, randomRotation, Math.random() * 30);
+        let random = __WEBPACK_IMPORTED_MODULE_3_ranjs__["a" /* core */].float();
+        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].rotateX(randomRotation, I, random * 30);
+        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].rotateY(randomRotation, randomRotation, random * 30);
+        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].rotateZ(randomRotation, randomRotation, random * 30);
         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].multiply(transformMat, transformMat, randomRotation);
         this.leafTransformationMats.push(transformMat);
+    }
+    drawApple() {
+        let turtle = this.lsystem.currTurtle;
+        turtle.isLeaf = false;
+        turtle.isApple = true;
+        // Variable that controls density of apples
+        let appleDensity = 0.15;
+        if (__WEBPACK_IMPORTED_MODULE_3_ranjs__["a" /* core */].float() < appleDensity) {
+            let transformMat = turtle.getTransformationMatrix();
+            let I = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create();
+            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].identity(I);
+            let randomRotation = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create();
+            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].rotateX(randomRotation, I, 4.0 * Math.PI / 3.0);
+            __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].multiply(transformMat, transformMat, randomRotation);
+            this.appleTransformationMats.push(transformMat);
+        }
     }
     drawNothing() { }
     rotateUpPos() {
@@ -22752,6 +22814,7 @@ class Plant {
         this.lsystem.addDrawingRule("F", this.drawForward.bind(this), 1.0);
         this.lsystem.addDrawingRule("X", this.drawNothing.bind(this), 1.0);
         this.lsystem.addDrawingRule("L", this.drawLeaf.bind(this), 1.0);
+        this.lsystem.addDrawingRule("A", this.drawApple.bind(this), 1.0);
         this.lsystem.addDrawingRule("+", this.rotateUpPos.bind(this), 0.5);
         this.lsystem.addDrawingRule("-", this.rotateUpNeg.bind(this), 1.0);
         this.lsystem.addDrawingRule("!", this.rotateForwardPos.bind(this), 1.0);
@@ -22773,13 +22836,17 @@ class Plant {
         ]);
         this.lsystem.addExpansionRule("F", new __WEBPACK_IMPORTED_MODULE_2__ExpansionRule__["a" /* default */](F_map, this.seed));
         let X_map = new Map([
-            ["FFFF[+FFLXL]FF[#FFXL]FLFL[$FFLXL]FF[-FFLXL]FFXL", 1.0],
+            ["FFFF[+FFLXL]FF[#FFXLA]FLFL[$FFLXL]FF[-FFLXL]FFXLA", 1.0],
         ]);
         this.lsystem.addExpansionRule("X", new __WEBPACK_IMPORTED_MODULE_2__ExpansionRule__["a" /* default */](X_map, this.seed));
         let L_map = new Map([
             ["L", 1.0],
         ]);
         this.lsystem.addExpansionRule("L", new __WEBPACK_IMPORTED_MODULE_2__ExpansionRule__["a" /* default */](L_map, this.seed));
+        let A_map = new Map([
+            ["A", 1.0],
+        ]);
+        this.lsystem.addExpansionRule("A", new __WEBPACK_IMPORTED_MODULE_2__ExpansionRule__["a" /* default */](A_map, this.seed));
         let rotateUpPos_map = new Map([["+", 1.0]]);
         this.lsystem.addExpansionRule("+", new __WEBPACK_IMPORTED_MODULE_2__ExpansionRule__["a" /* default */](rotateUpPos_map, this.seed));
         let rotateUpNeg_map = new Map([["-", 1.0]]);
@@ -22913,6 +22980,7 @@ class LSystem {
 class Turtle {
     constructor(pos, forward, right, up, depth, trunkDepth, branchThickness) {
         this.isLeaf = false;
+        this.isApple = false;
         this.branchThickness = 0.5;
         this.pos = pos;
         this.forward = forward;
@@ -22947,8 +23015,8 @@ class Turtle {
         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].cross(rotationAxis, globalUp, forwardVec);
         __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].fromRotation(rotate, theta, rotationAxis);
         let scale = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create();
-        // if the turtle represents a leaf, do not scale
-        if (this.isLeaf) {
+        // if the turtle represents a leaf or apple, do not scale
+        if (this.isLeaf || this.isApple) {
             scale = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].identity(scale);
         }
         else {
