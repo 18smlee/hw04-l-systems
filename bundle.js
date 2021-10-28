@@ -11811,13 +11811,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 // Procedural Controls
-let prevIterations = 3.0;
-let prevBranchThickness = 0.5;
-let prevSeed = 1.0;
+let prevIterations;
+let prevBranchThickness;
+let prevSeed;
+let prevAppleDensity;
 const controls = {
     iterations: 3,
     branchThickness: 0.5,
     seed: 1.0,
+    appleDensity: 0.15,
 };
 let square;
 let screenQuad;
@@ -11834,7 +11836,7 @@ let groundOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFil
 let ground;
 let appleOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/apple.obj');
 let apple;
-function loadScene(seed, branchThickness) {
+function loadScene(seed, branchThickness, appleDensity) {
     square = new __WEBPACK_IMPORTED_MODULE_3__geometry_Square__["a" /* default */]();
     square.create();
     screenQuad = new __WEBPACK_IMPORTED_MODULE_4__geometry_ScreenQuad__["a" /* default */]();
@@ -11852,7 +11854,7 @@ function loadScene(seed, branchThickness) {
     apple = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](appleOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
     apple.create();
     // Create plant
-    let plant = new __WEBPACK_IMPORTED_MODULE_10__lsystem_Plant__["a" /* default */]("TTTTTTTTX", controls.iterations, 30.0, seed, branchThickness);
+    let plant = new __WEBPACK_IMPORTED_MODULE_10__lsystem_Plant__["a" /* default */]("TTTTTTTTX", controls.iterations, 30.0, seed, branchThickness, appleDensity);
     plant.create();
     // Set up instanced rendering data arrays for plant
     let num = plant.transformationMats.length;
@@ -12093,6 +12095,7 @@ function main() {
     gui.add(controls, 'iterations', 1, 6).step(1.0);
     gui.add(controls, 'branchThickness', 0.3, 0.8).step(0.02);
     gui.add(controls, 'seed', 1.0, 10.0).step(1.0);
+    gui.add(controls, 'appleDensity', 0.0, 0.25).step(0.01);
     // get canvas and webgl context
     const canvas = document.getElementById('canvas');
     const gl = canvas.getContext('webgl2');
@@ -12103,7 +12106,7 @@ function main() {
     // Later, we can import `gl` from `globals.ts` to access it
     Object(__WEBPACK_IMPORTED_MODULE_7__globals__["c" /* setGL */])(gl);
     // Initial call to load scene
-    loadScene(controls.seed, controls.branchThickness);
+    loadScene(controls.seed, controls.branchThickness, controls.appleDensity);
     const camera = new __WEBPACK_IMPORTED_MODULE_6__Camera__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0, 10, 30), __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0, 5, 0));
     const renderer = new __WEBPACK_IMPORTED_MODULE_5__rendering_gl_OpenGLRenderer__["a" /* default */](canvas);
     renderer.setClearColor(0.1, 0.1, 0.1, 1);
@@ -12124,17 +12127,13 @@ function main() {
         flat.setTime(time++);
         gl.viewport(0, 0, window.innerWidth, window.innerHeight);
         renderer.clear();
-        if (controls.iterations != prevIterations) {
-            loadScene(controls.seed, controls.branchThickness);
+        if (controls.iterations != prevIterations || controls.branchThickness != prevBranchThickness ||
+            controls.seed != prevSeed || controls.appleDensity != prevAppleDensity) {
+            loadScene(controls.seed, controls.branchThickness, controls.appleDensity);
             prevIterations = controls.iterations;
-        }
-        if (controls.branchThickness != prevBranchThickness) {
-            loadScene(controls.seed, controls.branchThickness);
             prevBranchThickness = controls.branchThickness;
-        }
-        if (controls.seed != prevSeed) {
-            loadScene(controls.seed, controls.branchThickness);
             prevSeed = controls.seed;
+            prevAppleDensity = controls.appleDensity;
         }
         renderer.render(camera, flat, [screenQuad]);
         renderer.render(camera, instancedShader, [
@@ -22705,7 +22704,7 @@ class Mesh extends __WEBPACK_IMPORTED_MODULE_1__rendering_gl_Drawable__["a" /* d
 // import { random } from 'gl-matrix/src/gl-matrix/vec2';
 
 class Plant {
-    constructor(axiom, depth, angle, seed, branchThickness) {
+    constructor(axiom, depth, angle, seed, branchThickness, appleDensity) {
         this.positions = new Array();
         this.transformationMats = new Array();
         this.leafTransformationMats = new Array();
@@ -22716,6 +22715,7 @@ class Plant {
         this.seed = seed;
         __WEBPACK_IMPORTED_MODULE_3_ranjs__["a" /* core */].seed(seed);
         this.branchThickness = branchThickness;
+        this.appleDensity = appleDensity;
     }
     drawForward() {
         let turtle = this.lsystem.currTurtle;
@@ -22747,8 +22747,7 @@ class Plant {
         turtle.isLeaf = false;
         turtle.isApple = true;
         // Variable that controls density of apples
-        let appleDensity = 0.15;
-        if (__WEBPACK_IMPORTED_MODULE_3_ranjs__["a" /* core */].float() < appleDensity) {
+        if (__WEBPACK_IMPORTED_MODULE_3_ranjs__["a" /* core */].float() < this.appleDensity) {
             let transformMat = turtle.getTransformationMatrix();
             let I = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create();
             __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].identity(I);
@@ -32012,7 +32011,7 @@ function _computeRanks (data) {
 /* 256 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\n\nuniform mat4 u_ViewProj;\nuniform float u_Time;\n\nuniform mat3 u_CameraAxes; // Used for rendering particles as billboards (quads that are always looking at the camera)\n// gl_Position = center + vs_Pos.x * camRight + vs_Pos.y * camUp;\n\nin vec4 vs_Pos; // Non-instanced; each particle is the same quad drawn in a different place\nin vec4 vs_Nor; // Non-instanced, and presently unused\nin vec4 vs_Col; // An instanced rendering attribute; each particle instance has a different color\n\n//mat4 that we multiply by vs_Pos to get instances of a base cylinder traveling along our turtle path\nin vec4 vs_Transform1;\nin vec4 vs_Transform2;\nin vec4 vs_Transform3;\nin vec4 vs_Transform4;\n\nin vec3 vs_Translate; // Another instance rendering attribute used to position each quad instance in the scene\n\nin vec2 vs_UV; // Non-instanced, and presently unused in main(). Feel free to use it for your meshes.\n\nout vec4 fs_Col;\nout vec4 fs_Pos;\nout vec4 fs_Nor;\nout vec4 fs_LightVec;\n\nvoid main()\n{\n\n    vec4 lightPos = vec4(0.0, 15.0, 5.0, 1.0);\n\n    fs_Col = vs_Col;\n    fs_Pos = vs_Pos;\n    mat4 T = mat4(vs_Transform1, vs_Transform2, vs_Transform3, vs_Transform4);\n    vec4 finalPos = T * vs_Pos;\n\n    mat3 normalT = inverse(transpose(mat3(T)));\n    fs_Nor = vec4(normalT * vec3(vs_Nor), 0);\n\n    fs_LightVec = lightPos - finalPos;\n    \n    gl_Position = u_ViewProj * finalPos;\n}\n"
+module.exports = "#version 300 es\n\nuniform mat4 u_ViewProj;\nuniform float u_Time;\n\nuniform mat3 u_CameraAxes; // Used for rendering particles as billboards (quads that are always looking at the camera)\n// gl_Position = center + vs_Pos.x * camRight + vs_Pos.y * camUp;\n\nin vec4 vs_Pos; // Non-instanced; each particle is the same quad drawn in a different place\nin vec4 vs_Nor; // Non-instanced, and presently unused\nin vec4 vs_Col; // An instanced rendering attribute; each particle instance has a different color\n\n//mat4 that we multiply by vs_Pos to get instances of a base cylinder traveling along our turtle path\nin vec4 vs_Transform1;\nin vec4 vs_Transform2;\nin vec4 vs_Transform3;\nin vec4 vs_Transform4;\n\nin vec3 vs_Translate; // Another instance rendering attribute used to position each quad instance in the scene\n\nin vec2 vs_UV; // Non-instanced, and presently unused in main(). Feel free to use it for your meshes.\n\nout vec4 fs_Col;\nout vec4 fs_Pos;\nout vec4 fs_Nor;\nout vec4 fs_LightVec;\n\nvoid main()\n{\n\n    vec4 lightPos = vec4(0.0, 30.0, 30.0, 1.0);\n\n    fs_Col = vs_Col;\n    fs_Pos = vs_Pos;\n    mat4 T = mat4(vs_Transform1, vs_Transform2, vs_Transform3, vs_Transform4);\n    vec4 finalPos = T * vs_Pos;\n\n    mat3 normalT = inverse(transpose(mat3(T)));\n    fs_Nor = vec4(normalT * vec3(vs_Nor), 0);\n\n    fs_LightVec = lightPos - finalPos;\n    \n    gl_Position = u_ViewProj * finalPos;\n}\n"
 
 /***/ }),
 /* 257 */
