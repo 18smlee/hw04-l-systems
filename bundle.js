@@ -11828,6 +11828,8 @@ let leafOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile 
 let leaf;
 let potOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/pot.obj');
 let pot;
+let dirtOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/dirt.obj');
+let dirt;
 let groundOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/ground.obj');
 let ground;
 function loadScene(seed, branchThickness) {
@@ -11841,6 +11843,8 @@ function loadScene(seed, branchThickness) {
     leaf.create();
     pot = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](potOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
     pot.create();
+    dirt = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](dirtOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 2.0, 0.0));
+    dirt.create();
     ground = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](groundOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
     ground.create();
     // Create plant
@@ -11958,6 +11962,44 @@ function loadScene(seed, branchThickness) {
     let potTransform4 = new Float32Array(potTransform4Array);
     pot.setInstanceVBOs(potColors, potTransform1, potTransform2, potTransform3, potTransform4);
     pot.setNumInstances(potNum);
+    // Set up instanced rendering data arrays for dirt
+    let dirtNum = 1;
+    let dirtColorsArray = [];
+    let dirtTransform1Array = [];
+    let dirtTransform2Array = [];
+    let dirtTransform3Array = [];
+    let dirtTransform4Array = [];
+    for (let i = 0; i < potNum; i++) {
+        let T = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].create();
+        __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["b" /* mat4 */].identity(T);
+        dirtTransform1Array.push(T[0]);
+        dirtTransform1Array.push(T[1]);
+        dirtTransform1Array.push(T[2]);
+        dirtTransform1Array.push(T[3]);
+        dirtTransform2Array.push(T[4]);
+        dirtTransform2Array.push(T[5]);
+        dirtTransform2Array.push(T[6]);
+        dirtTransform2Array.push(T[7]);
+        dirtTransform3Array.push(T[8]);
+        dirtTransform3Array.push(T[9]);
+        dirtTransform3Array.push(T[10]);
+        dirtTransform3Array.push(T[11]);
+        dirtTransform4Array.push(T[12]);
+        dirtTransform4Array.push(T[13]);
+        dirtTransform4Array.push(T[14]);
+        dirtTransform4Array.push(1);
+        dirtColorsArray.push(33.0 / 255.0);
+        dirtColorsArray.push(13.0 / 255.0);
+        dirtColorsArray.push(2.0 / 255.0);
+        dirtColorsArray.push(1.0);
+    }
+    let dirtColors = new Float32Array(dirtColorsArray);
+    let dirtTransform1 = new Float32Array(dirtTransform1Array);
+    let dirtTransform2 = new Float32Array(dirtTransform2Array);
+    let dirtTransform3 = new Float32Array(dirtTransform3Array);
+    let dirtTransform4 = new Float32Array(dirtTransform4Array);
+    dirt.setInstanceVBOs(dirtColors, dirtTransform1, dirtTransform2, dirtTransform3, dirtTransform4);
+    dirt.setNumInstances(dirtNum);
     // Set up instanced rendering data arrays for pot
     let groundNum = 1;
     let groundColorsArray = [];
@@ -12059,6 +12101,7 @@ function main() {
             leaf,
             pot,
             ground,
+            dirt,
         ]);
         stats.end();
         // Tell the browser to call `tick` again whenever it renders a new frame
