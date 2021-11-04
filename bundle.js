@@ -2414,6 +2414,8 @@ class Drawable {
         this.posGenerated = false;
         this.norGenerated = false;
         this.colGenerated = false;
+        this.meshIdGenerated = false;
+        this.instanceIdGenerated = false;
         this.translateGenerated = false;
         this.uvGenerated = false;
         this.transform1Generated = false;
@@ -2429,6 +2431,8 @@ class Drawable {
         __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufCol);
         __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufTranslate);
         __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufUV);
+        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufMeshId);
+        __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufInstanceId);
         __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufTransform1);
         __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufTransform2);
         __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].deleteBuffer(this.bufTransform3);
@@ -2449,6 +2453,14 @@ class Drawable {
     generateCol() {
         this.colGenerated = true;
         this.bufCol = __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].createBuffer();
+    }
+    generateMeshId() {
+        this.meshIdGenerated = true;
+        this.bufMeshId = __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].createBuffer();
+    }
+    generateInstanceId() {
+        this.instanceIdGenerated = true;
+        this.bufInstanceId = __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].createBuffer();
     }
     generateTranslate() {
         this.translateGenerated = true;
@@ -2497,6 +2509,18 @@ class Drawable {
             __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].ARRAY_BUFFER, this.bufCol);
         }
         return this.colGenerated;
+    }
+    bindMeshId() {
+        if (this.meshIdGenerated) {
+            __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].ARRAY_BUFFER, this.bufMeshId);
+        }
+        return this.meshIdGenerated;
+    }
+    bindInstanceId() {
+        if (this.instanceIdGenerated) {
+            __WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_0__globals__["a" /* gl */].ARRAY_BUFFER, this.bufInstanceId);
+        }
+        return this.instanceIdGenerated;
     }
     bindTranslate() {
         if (this.translateGenerated) {
@@ -11830,9 +11854,9 @@ let leafOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile 
 let leaf;
 let potOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/pot.obj');
 let pot;
-let dirtOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/dirt.obj');
+let dirtOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/mulch.obj');
 let dirt;
-let groundOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/ground.obj');
+let groundOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/grass.obj');
 let ground;
 let appleOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/apple.obj');
 let apple;
@@ -11841,24 +11865,25 @@ function loadScene(seed, branchThickness, appleDensity) {
     square.create();
     screenQuad = new __WEBPACK_IMPORTED_MODULE_4__geometry_ScreenQuad__["a" /* default */]();
     screenQuad.create();
-    plantCylinder = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](plantCylinderOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
+    plantCylinder = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](plantCylinderOBJ, 0, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
     plantCylinder.create();
-    leaf = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](leafOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
+    leaf = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](leafOBJ, 1, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
     leaf.create();
-    pot = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](potOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
+    pot = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](potOBJ, 2, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
     pot.create();
-    dirt = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](dirtOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
-    dirt.create();
-    ground = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](groundOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
+    ground = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](groundOBJ, 3, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
     ground.create();
-    apple = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](appleOBJ, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
+    apple = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](appleOBJ, 4, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
     apple.create();
+    dirt = new __WEBPACK_IMPORTED_MODULE_9__geometry_Mesh__["a" /* default */](dirtOBJ, 5, __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["c" /* vec3 */].fromValues(0.0, 0.0, 0.0));
+    dirt.create();
     // Create plant
     let plant = new __WEBPACK_IMPORTED_MODULE_10__lsystem_Plant__["a" /* default */]("TTTTTTTTX", controls.iterations, 30.0, seed, branchThickness, appleDensity);
     plant.create();
     // Set up instanced rendering data arrays for plant
     let num = plant.transformationMats.length;
     let colorsArray = [];
+    let instanceIdArray = [];
     let transform1Array = [];
     let transform2Array = [];
     let transform3Array = [];
@@ -11881,21 +11906,27 @@ function loadScene(seed, branchThickness, appleDensity) {
         transform4Array.push(T[13]);
         transform4Array.push(T[14]);
         transform4Array.push(1);
+        instanceIdArray.push(i);
+        instanceIdArray.push(i);
+        instanceIdArray.push(i);
+        instanceIdArray.push(i);
         colorsArray.push(114.0 / 255.0);
         colorsArray.push(69.0 / 255.0);
         colorsArray.push(12.0 / 255.0);
         colorsArray.push(1.0);
     }
     let colors = new Float32Array(colorsArray);
+    let instanceIds = new Float32Array(instanceIdArray);
     let transform1 = new Float32Array(transform1Array);
     let transform2 = new Float32Array(transform2Array);
     let transform3 = new Float32Array(transform3Array);
     let transform4 = new Float32Array(transform4Array);
-    plantCylinder.setInstanceVBOs(colors, transform1, transform2, transform3, transform4);
+    plantCylinder.setInstanceVBOs(colors, instanceIds, transform1, transform2, transform3, transform4);
     plantCylinder.setNumInstances(plant.transformationMats.length);
     // Set up instanced rendering data arrays for plant's leaves
     let leafNum = plant.leafTransformationMats.length;
     let leafColorsArray = [];
+    let leafInstanceIdArray = [];
     let leafTransform1Array = [];
     let leafTransform2Array = [];
     let leafTransform3Array = [];
@@ -11918,21 +11949,27 @@ function loadScene(seed, branchThickness, appleDensity) {
         leafTransform4Array.push(T[13]);
         leafTransform4Array.push(T[14]);
         leafTransform4Array.push(1);
+        leafInstanceIdArray.push(i);
+        leafInstanceIdArray.push(i);
+        leafInstanceIdArray.push(i);
+        leafInstanceIdArray.push(i);
         leafColorsArray.push(32.0 / 255.0);
         leafColorsArray.push(132.0 / 255.0);
         leafColorsArray.push(77.0 / 255.0);
         leafColorsArray.push(1.0);
     }
     let leafColors = new Float32Array(leafColorsArray);
+    let leafInstanceIds = new Float32Array(leafInstanceIdArray);
     let leafTransform1 = new Float32Array(leafTransform1Array);
     let leafTransform2 = new Float32Array(leafTransform2Array);
     let leafTransform3 = new Float32Array(leafTransform3Array);
     let leafTransform4 = new Float32Array(leafTransform4Array);
-    leaf.setInstanceVBOs(leafColors, leafTransform1, leafTransform2, leafTransform3, leafTransform4);
+    leaf.setInstanceVBOs(leafColors, leafInstanceIds, leafTransform1, leafTransform2, leafTransform3, leafTransform4);
     leaf.setNumInstances(plant.leafTransformationMats.length);
     // Set up instanced rendering data arrays for apple
     let appleNum = plant.appleTransformationMats.length;
     let appleColorsArray = [];
+    let appleInstanceIdArray = [];
     let appleTransform1Array = [];
     let appleTransform2Array = [];
     let appleTransform3Array = [];
@@ -11955,21 +11992,27 @@ function loadScene(seed, branchThickness, appleDensity) {
         appleTransform4Array.push(T[13]);
         appleTransform4Array.push(T[14]);
         appleTransform4Array.push(1);
+        appleInstanceIdArray.push(i);
+        appleInstanceIdArray.push(i);
+        appleInstanceIdArray.push(i);
+        appleInstanceIdArray.push(i);
         appleColorsArray.push(185.0 / 255.0);
         appleColorsArray.push(25.0 / 255.0);
         appleColorsArray.push(7.0 / 255.0);
         appleColorsArray.push(1.0);
     }
     let appleColors = new Float32Array(appleColorsArray);
+    let appleInstanceIds = new Float32Array(appleInstanceIdArray);
     let appleTransform1 = new Float32Array(appleTransform1Array);
     let appleTransform2 = new Float32Array(appleTransform2Array);
     let appleTransform3 = new Float32Array(appleTransform3Array);
     let appleTransform4 = new Float32Array(appleTransform4Array);
-    apple.setInstanceVBOs(appleColors, appleTransform1, appleTransform2, appleTransform3, appleTransform4);
+    apple.setInstanceVBOs(appleColors, appleInstanceIds, appleTransform1, appleTransform2, appleTransform3, appleTransform4);
     apple.setNumInstances(appleNum);
     // Set up instanced rendering data arrays for pot
     let potNum = 1;
     let potColorsArray = [];
+    let potInstanceIdArray = [];
     let potTransform1Array = [];
     let potTransform2Array = [];
     let potTransform3Array = [];
@@ -11993,21 +12036,27 @@ function loadScene(seed, branchThickness, appleDensity) {
         potTransform4Array.push(T[13]);
         potTransform4Array.push(T[14]);
         potTransform4Array.push(1);
+        potInstanceIdArray.push(i);
+        potInstanceIdArray.push(i);
+        potInstanceIdArray.push(i);
+        potInstanceIdArray.push(i);
         potColorsArray.push(161.0 / 255.0);
         potColorsArray.push(71.0 / 255.0);
         potColorsArray.push(39.0 / 255.0);
         potColorsArray.push(1.0);
     }
     let potColors = new Float32Array(potColorsArray);
+    let potInstanceId = new Float32Array(potInstanceIdArray);
     let potTransform1 = new Float32Array(potTransform1Array);
     let potTransform2 = new Float32Array(potTransform2Array);
     let potTransform3 = new Float32Array(potTransform3Array);
     let potTransform4 = new Float32Array(potTransform4Array);
-    pot.setInstanceVBOs(potColors, potTransform1, potTransform2, potTransform3, potTransform4);
+    pot.setInstanceVBOs(potColors, potInstanceId, potTransform1, potTransform2, potTransform3, potTransform4);
     pot.setNumInstances(potNum);
     // Set up instanced rendering data arrays for dirt
     let dirtNum = 1;
     let dirtColorsArray = [];
+    let dirtInstanceIdArray = [];
     let dirtTransform1Array = [];
     let dirtTransform2Array = [];
     let dirtTransform3Array = [];
@@ -12031,21 +12080,27 @@ function loadScene(seed, branchThickness, appleDensity) {
         dirtTransform4Array.push(T[13]);
         dirtTransform4Array.push(T[14]);
         dirtTransform4Array.push(1);
+        dirtInstanceIdArray.push(i);
+        dirtInstanceIdArray.push(i);
+        dirtInstanceIdArray.push(i);
+        dirtInstanceIdArray.push(i);
         dirtColorsArray.push(33.0 / 255.0);
         dirtColorsArray.push(13.0 / 255.0);
         dirtColorsArray.push(2.0 / 255.0);
         dirtColorsArray.push(1.0);
     }
     let dirtColors = new Float32Array(dirtColorsArray);
+    let dirtInstanceIds = new Float32Array(dirtInstanceIdArray);
     let dirtTransform1 = new Float32Array(dirtTransform1Array);
     let dirtTransform2 = new Float32Array(dirtTransform2Array);
     let dirtTransform3 = new Float32Array(dirtTransform3Array);
     let dirtTransform4 = new Float32Array(dirtTransform4Array);
-    dirt.setInstanceVBOs(dirtColors, dirtTransform1, dirtTransform2, dirtTransform3, dirtTransform4);
+    dirt.setInstanceVBOs(dirtColors, dirtInstanceIds, dirtTransform1, dirtTransform2, dirtTransform3, dirtTransform4);
     dirt.setNumInstances(dirtNum);
     // Set up instanced rendering data arrays for ground
     let groundNum = 1;
     let groundColorsArray = [];
+    let groundInstanceIdArray = [];
     let groundTransform1Array = [];
     let groundTransform2Array = [];
     let groundTransform3Array = [];
@@ -12069,17 +12124,22 @@ function loadScene(seed, branchThickness, appleDensity) {
         groundTransform4Array.push(T[13]);
         groundTransform4Array.push(T[14]);
         groundTransform4Array.push(1);
+        groundInstanceIdArray.push(i);
+        groundInstanceIdArray.push(i);
+        groundInstanceIdArray.push(i);
+        groundInstanceIdArray.push(i);
         groundColorsArray.push(230.0 / 255.0);
         groundColorsArray.push(172.0 / 255.0);
         groundColorsArray.push(95.0 / 255.0);
         groundColorsArray.push(1.0);
     }
     let groundColors = new Float32Array(groundColorsArray);
+    let groundInstanceIds = new Float32Array(groundInstanceIdArray);
     let groundTransform1 = new Float32Array(groundTransform1Array);
     let groundTransform2 = new Float32Array(groundTransform2Array);
     let groundTransform3 = new Float32Array(groundTransform3Array);
     let groundTransform4 = new Float32Array(groundTransform4Array);
-    ground.setInstanceVBOs(groundColors, groundTransform1, groundTransform2, groundTransform3, groundTransform4);
+    ground.setInstanceVBOs(groundColors, groundInstanceIds, groundTransform1, groundTransform2, groundTransform3, groundTransform4);
     ground.setNumInstances(groundNum);
 }
 function main() {
@@ -12115,6 +12175,7 @@ function main() {
         new __WEBPACK_IMPORTED_MODULE_8__rendering_gl_ShaderProgram__["a" /* Shader */](gl.VERTEX_SHADER, __webpack_require__(256)),
         new __WEBPACK_IMPORTED_MODULE_8__rendering_gl_ShaderProgram__["a" /* Shader */](gl.FRAGMENT_SHADER, __webpack_require__(257)),
     ]);
+    instancedShader.setTextures();
     const flat = new __WEBPACK_IMPORTED_MODULE_8__rendering_gl_ShaderProgram__["b" /* default */]([
         new __WEBPACK_IMPORTED_MODULE_8__rendering_gl_ShaderProgram__["a" /* Shader */](gl.VERTEX_SHADER, __webpack_require__(258)),
         new __WEBPACK_IMPORTED_MODULE_8__rendering_gl_ShaderProgram__["a" /* Shader */](gl.FRAGMENT_SHADER, __webpack_require__(259)),
@@ -12139,7 +12200,7 @@ function main() {
         renderer.render(camera, instancedShader, [
             plantCylinder,
             leaf,
-            pot,
+            // pot,
             ground,
             dirt,
             apple,
@@ -22441,6 +22502,8 @@ class ShaderProgram {
         this.attrPos = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_Pos");
         this.attrCol = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_Col");
         this.attrNor = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_Nor");
+        this.attrMeshId = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_MeshId");
+        this.attrInstanceId = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_InstanceId");
         this.attrTranslate = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_Translate");
         this.attrUV = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_UV");
         this.attrTransform1 = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getAttribLocation(this.prog, "vs_Transform1");
@@ -22455,12 +22518,69 @@ class ShaderProgram {
         this.unifEye = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Eye");
         this.unifRef = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Ref");
         this.unifUp = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_Up");
+        // Textures
+        this.unifBarkTexture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_barkTexture");
+        this.unifLeafTexture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_leafTexture");
+        this.unifPotTexture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_potTexture");
+        this.unifGroundTexture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_groundTexture");
+        this.unifAppleTexture1 = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_appleTexture1");
+        this.unifAppleTexture2 = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_appleTexture2");
+        this.unifMulchTexture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_mulchTexture");
     }
     use() {
         if (activeProgram !== this.prog) {
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].useProgram(this.prog);
             activeProgram = this.prog;
         }
+    }
+    createTexture(url) {
+        // setting up texture in OpenGL
+        let texture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].createTexture();
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, texture);
+        // Fill the texture with a 1x1 blue pixel.
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].texImage2D(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, 0, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].RGBA, 1, 1, 0, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].RGBA, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
+        // Asynchronously load an image
+        var image = new Image();
+        image.src = url;
+        image.crossOrigin = "anonymous";
+        console.log(image.src);
+        image.addEventListener('load', function () {
+            // Now that the image has loaded make copy it to the texture.
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, texture);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].texImage2D(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, 0, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].RGBA, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].RGBA, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].UNSIGNED_BYTE, image);
+            // Check if the image is a power of 2 in both dimensions.
+            if (ShaderProgram.isPowerOf2(image.width) && ShaderProgram.isPowerOf2(image.height)) {
+                // Yes, it's a power of 2. Generate mips.
+                __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].generateMipmap(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D);
+            }
+            else {
+                // No, it's not a power of 2. Turn of mips and set wrapping to clamp to edge
+                __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].texParameteri(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_WRAP_S, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].CLAMP_TO_EDGE);
+                __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].texParameteri(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_WRAP_T, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].CLAMP_TO_EDGE);
+                __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].texParameteri(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_MIN_FILTER, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].LINEAR);
+            }
+        });
+        return texture;
+    }
+    static isPowerOf2(value) {
+        return (value & (value - 1)) === 0;
+    }
+    setTextures() {
+        this.use();
+        this.barkTexture = this.createTexture('./src/textures/bark.jpg');
+        this.leafTexture = this.createTexture('./src/textures/leaf.jpg');
+        this.potTexture = this.createTexture('./src/textures/terracotta.jpg');
+        this.groundTexture = this.createTexture('./src/textures/ground.jpg');
+        this.appleTexture1 = this.createTexture('./src/textures/apple1.jpg');
+        this.appleTexture2 = this.createTexture('./src/textures/apple2.jpg');
+        this.mulchTexture = this.createTexture('./src/textures/mulch.jpg');
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifBarkTexture, 0);
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifLeafTexture, 1);
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifPotTexture, 2);
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifGroundTexture, 3);
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifAppleTexture1, 4);
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifMulchTexture, 5);
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifAppleTexture2, 6);
     }
     setEyeRefUp(eye, ref, up) {
         this.use();
@@ -22537,6 +22657,16 @@ class ShaderProgram {
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribPointer(this.attrUV, 2, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].FLOAT, false, 0, 0);
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribDivisor(this.attrUV, 0); // Advance 1 index in pos VBO for each vertex
         }
+        if (this.attrMeshId != -1 && d.bindMeshId()) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].enableVertexAttribArray(this.attrMeshId);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribPointer(this.attrMeshId, 2, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].FLOAT, false, 0, 0);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribDivisor(this.attrMeshId, 0); // Advance 1 index in pos VBO for each vertex
+        }
+        if (this.attrInstanceId != -1 && d.bindInstanceId()) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].enableVertexAttribArray(this.attrInstanceId);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribPointer(this.attrInstanceId, 4, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].FLOAT, false, 0, 0);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribDivisor(this.attrInstanceId, 1); // Advance 1 index in pos VBO for each vertex
+        }
         // TODO: Set up attribute data for additional instanced rendering data as needed
         if (this.attrTransform1 != -1 && d.bindTransform1()) {
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].enableVertexAttribArray(this.attrTransform1);
@@ -22558,6 +22688,41 @@ class ShaderProgram {
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribPointer(this.attrTransform4, 4, __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].FLOAT, false, 0, 0);
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].vertexAttribDivisor(this.attrTransform4, 1); // Advance 1 index in pos VBO for each vertex
         }
+        if (this.unifBarkTexture != -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE0); //GL supports up to 32 different active textures at once(0 - 31)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.barkTexture);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifBarkTexture, 0);
+        }
+        if (this.unifLeafTexture != -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE1); //GL supports up to 32 different active textures at once(0 - 31)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.leafTexture);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifLeafTexture, 1);
+        }
+        if (this.unifPotTexture != -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE2); //GL supports up to 32 different active textures at once(0 - 31)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.potTexture);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifPotTexture, 2);
+        }
+        if (this.unifGroundTexture != -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE3); //GL supports up to 32 different active textures at once(0 - 31)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.groundTexture);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifGroundTexture, 3);
+        }
+        if (this.unifAppleTexture1 != -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE4); //GL supports up to 32 different active textures at once(0 - 31)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.appleTexture1);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifAppleTexture1, 4);
+        }
+        if (this.unifMulchTexture != -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE5); //GL supports up to 32 different active textures at once(0 - 31)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.mulchTexture);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifMulchTexture, 5);
+        }
+        if (this.unifAppleTexture2 != -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE6); //GL supports up to 32 different active textures at once(0 - 31)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.appleTexture2);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifAppleTexture2, 6);
+        }
         d.bindIdx();
         // drawElementsInstanced uses the vertexAttribDivisor for each "in" variable to
         // determine how to link it to each drawn instance of the bound VBO.
@@ -22577,6 +22742,10 @@ class ShaderProgram {
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].disableVertexAttribArray(this.attrNor);
         if (this.attrCol != -1)
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].disableVertexAttribArray(this.attrCol);
+        if (this.attrMeshId != -1)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].disableVertexAttribArray(this.attrMeshId);
+        if (this.attrInstanceId != -1)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].disableVertexAttribArray(this.attrInstanceId);
         if (this.attrTranslate != -1)
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].disableVertexAttribArray(this.attrTranslate);
         if (this.attrUV != -1)
@@ -22610,16 +22779,18 @@ class ShaderProgram {
 
 
 class Mesh extends __WEBPACK_IMPORTED_MODULE_1__rendering_gl_Drawable__["a" /* default */] {
-    constructor(objString, center) {
+    constructor(objString, meshId, center) {
         super(); // Call the constructor of the super class. This is required.
         this.center = __WEBPACK_IMPORTED_MODULE_0_gl_matrix__["d" /* vec4 */].fromValues(center[0], center[1], center[2], 1);
         this.objString = objString;
+        this.meshId = meshId;
     }
     create() {
         let posTemp = [];
         let norTemp = [];
         let uvsTemp = [];
         let idxTemp = [];
+        let meshIdTemp = [];
         var loadedMesh = new __WEBPACK_IMPORTED_MODULE_3_webgl_obj_loader__["Mesh"](this.objString);
         //posTemp = loadedMesh.vertices;
         for (var i = 0; i < loadedMesh.vertices.length; i++) {
@@ -22632,17 +22803,26 @@ class Mesh extends __WEBPACK_IMPORTED_MODULE_1__rendering_gl_Drawable__["a" /* d
             if (i % 3 == 2)
                 norTemp.push(0.0);
         }
+        // pushes back the same Mesh id for all positions
+        for (var i = 0; i < loadedMesh.vertices.length; i++) {
+            meshIdTemp.push(this.meshId);
+            if (i % 3 == 2)
+                meshIdTemp.push(1.0);
+        }
         uvsTemp = loadedMesh.textures;
         idxTemp = loadedMesh.indices;
         this.indices = new Uint32Array(idxTemp);
         this.normals = new Float32Array(norTemp);
         this.positions = new Float32Array(posTemp);
         this.uvs = new Float32Array(uvsTemp);
+        this.meshIdArray = new Float32Array(meshIdTemp);
         this.generateIdx();
         this.generatePos();
         this.generateNor();
         this.generateUV();
         this.generateCol();
+        this.generateMeshId();
+        this.generateInstanceId();
         this.generateTransform1();
         this.generateTransform2();
         this.generateTransform3();
@@ -22654,21 +22834,25 @@ class Mesh extends __WEBPACK_IMPORTED_MODULE_1__rendering_gl_Drawable__["a" /* d
         __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.normals, __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].STATIC_DRAW);
         __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.bufPos);
         __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.positions, __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].STATIC_DRAW);
-        // gl.bindBuffer(gl.ARRAY_BUFFER, this.bufCol);
-        // gl.bufferData(gl.ARRAY_BUFFER, this.colors, gl.STATIC_DRAW);
+        __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.bufMeshId);
+        __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.meshIdArray, __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].STATIC_DRAW);
         __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.bufUV);
         __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.uvs, __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].STATIC_DRAW);
         console.log(`Created Mesh from OBJ`);
         this.objString = ""; // hacky clear
     }
-    setInstanceVBOs(colors, transform1, transform2, transform3, transform4) {
+    setInstanceVBOs(colors, instanceIds, transform1, transform2, transform3, transform4) {
         this.colors = colors;
+        this.instanceIds = instanceIds;
         this.transform1 = transform1;
         this.transform2 = transform2;
         this.transform3 = transform3;
         this.transform4 = transform4;
         __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.bufCol);
         __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.colors, __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].STATIC_DRAW);
+        __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.bufInstanceId);
+        __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.instanceIds, __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].STATIC_DRAW);
+        console.log(this.instanceIds);
         __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.bufTransform1);
         __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bufferData(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.transform1, __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].STATIC_DRAW);
         __WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].bindBuffer(__WEBPACK_IMPORTED_MODULE_2__globals__["a" /* gl */].ARRAY_BUFFER, this.bufTransform2);
@@ -32011,13 +32195,13 @@ function _computeRanks (data) {
 /* 256 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\n\nuniform mat4 u_ViewProj;\nuniform float u_Time;\n\nuniform mat3 u_CameraAxes; // Used for rendering particles as billboards (quads that are always looking at the camera)\n// gl_Position = center + vs_Pos.x * camRight + vs_Pos.y * camUp;\n\nin vec4 vs_Pos; // Non-instanced; each particle is the same quad drawn in a different place\nin vec4 vs_Nor; // Non-instanced, and presently unused\nin vec4 vs_Col; // An instanced rendering attribute; each particle instance has a different color\n\n//mat4 that we multiply by vs_Pos to get instances of a base cylinder traveling along our turtle path\nin vec4 vs_Transform1;\nin vec4 vs_Transform2;\nin vec4 vs_Transform3;\nin vec4 vs_Transform4;\n\nin vec3 vs_Translate; // Another instance rendering attribute used to position each quad instance in the scene\n\nin vec2 vs_UV; // Non-instanced, and presently unused in main(). Feel free to use it for your meshes.\n\nout vec4 fs_Col;\nout vec4 fs_Pos;\nout vec4 fs_Nor;\nout vec4 fs_LightVec;\n\nvoid main()\n{\n\n    vec4 lightPos = vec4(0.0, 30.0, 30.0, 1.0);\n\n    fs_Col = vs_Col;\n    fs_Pos = vs_Pos;\n    mat4 T = mat4(vs_Transform1, vs_Transform2, vs_Transform3, vs_Transform4);\n    vec4 finalPos = T * vs_Pos;\n\n    mat3 normalT = inverse(transpose(mat3(T)));\n    fs_Nor = vec4(normalT * vec3(vs_Nor), 0);\n\n    fs_LightVec = lightPos - finalPos;\n    \n    gl_Position = u_ViewProj * finalPos;\n}\n"
+module.exports = "#version 300 es\n\nuniform mat4 u_ViewProj;\nuniform float u_Time;\n\nuniform mat3 u_CameraAxes; // Used for rendering particles as billboards (quads that are always looking at the camera)\n// gl_Position = center + vs_Pos.x * camRight + vs_Pos.y * camUp;\n\nin vec4 vs_Pos; // Non-instanced; each particle is the same quad drawn in a different place\nin vec4 vs_Nor; // Non-instanced, and presently unused\nin vec4 vs_Col; // An instanced rendering attribute; each particle instance has a different color\nin vec4 vs_MeshId; // Id corresponding to mesh\nin vec4 vs_InstanceId; // Id corresponding to mesh instance\n\n//mat4 that we multiply by vs_Pos to get instances of a base cylinder traveling along our turtle path\nin vec4 vs_Transform1;\nin vec4 vs_Transform2;\nin vec4 vs_Transform3;\nin vec4 vs_Transform4;\n\nin vec3 vs_Translate; // Another instance rendering attribute used to position each quad instance in the scene\n\nin vec2 vs_UV; // Non-instanced, and presently unused in main(). Feel free to use it for your meshes.\n\nout vec4 fs_Col;\nout vec4 fs_Pos;\nout vec4 fs_Nor;\nout vec4 fs_LightVec;\nout vec2 fs_UV;\nout vec4 fs_MeshId;\nout vec4 fs_InstanceId;\n\nvec2 transformUV()\n{\n    float tex_divs = 15.0;\n    float uv_scale = 1.0 / tex_divs;\n    float cel_y = uv_scale * floor(vs_InstanceId[0] * uv_scale);\n    float cel_x = uv_scale * (mod(vs_InstanceId[0], tex_divs));\n    float nextcel_y = uv_scale * floor(vs_InstanceId[0] * uv_scale + 1.0);\n    vec2 transformedUV = vs_UV;\n    transformedUV *= uv_scale;\n    transformedUV += vec2(cel_x, cel_y);\n    \n    return transformedUV;\n}\n\nvoid main()\n{\n    fs_MeshId = vs_MeshId;\n    fs_InstanceId = vs_InstanceId;\n\n    fs_UV = vs_UV;\n    vec4 lightPos = vec4(0.0, 30.0, 30.0, 1.0);\n\n    fs_Col = vs_Col;\n    fs_Pos = vs_Pos;\n    mat4 T = mat4(vs_Transform1, vs_Transform2, vs_Transform3, vs_Transform4);\n    vec4 finalPos = T * vs_Pos;\n\n    mat3 normalT = inverse(transpose(mat3(T)));\n    fs_Nor = vec4(normalT * vec3(vs_Nor), 0);\n\n    fs_LightVec = lightPos - finalPos;\n    \n    gl_Position = u_ViewProj * finalPos;\n}\n"
 
 /***/ }),
 /* 257 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\nprecision highp float;\n\nin vec4 fs_Col;\nin vec4 fs_Pos;\nin vec4 fs_Nor;\nin vec4 fs_LightVec;\n\nout vec4 out_Col;\n\nvoid main()\n{\n\n    vec4 diffuseColor = fs_Col;\n    float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));\n    diffuseTerm = clamp(diffuseTerm, 0.0, 1.0);\n    float ambientTerm = 0.4;\n    float lightIntensity = diffuseTerm + ambientTerm;\n\n    out_Col = vec4(diffuseColor.rgb * lightIntensity, 1.0);\n}\n"
+module.exports = "#version 300 es\nprecision highp float;\n\nin vec4 fs_Col;\nin vec4 fs_Pos;\nin vec4 fs_Nor;\nin vec4 fs_LightVec;\nin vec2 fs_UV;\nin vec4 fs_MeshId;\nin vec4 fs_InstanceId;\n\nout vec4 out_Col;\nuniform sampler2D u_barkTexture;\nuniform sampler2D u_leafTexture;\nuniform sampler2D u_potTexture;\nuniform sampler2D u_groundTexture;\nuniform sampler2D u_appleTexture1;\nuniform sampler2D u_appleTexture2;\nuniform sampler2D u_mulchTexture;\n\nfloat rand(vec2 co){\n    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);\n}\n\nvoid main()\n{\n    vec4 diffuseColor = fs_Col;\n\n    // Draws texture depending on the Mesh Id\n    if (fs_MeshId[0] == 0.0) {\n        diffuseColor = texture(u_barkTexture, fs_UV);\n    } else if (fs_MeshId[0] == 1.0) {\n        diffuseColor = texture(u_leafTexture, fs_UV);\n    } else if (fs_MeshId[0] == 2.0) {\n        diffuseColor = texture(u_potTexture, fs_UV);\n    } else if (fs_MeshId[0] == 3.0) {\n        diffuseColor = texture(u_groundTexture, fs_UV);\n    } else if (fs_MeshId[0] == 4.0) {\n        float appleProb = rand(fs_InstanceId.xy);\n        if (appleProb < 0.5) {\n            diffuseColor = texture(u_appleTexture1, fs_UV);\n        } else {\n            diffuseColor = texture(u_appleTexture2, fs_UV);\n        }\n        //diffuseColor = texture(u_appleTexture1, fs_UV);\n\n    } else if (fs_MeshId[0] == 5.0) {\n        diffuseColor = texture(u_mulchTexture, fs_UV);\n    }\n   \n    float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));\n    diffuseTerm = clamp(diffuseTerm, 0.0, 1.0);\n    float ambientTerm = 0.4;\n    float lightIntensity = diffuseTerm + ambientTerm;\n\n    out_Col = vec4(diffuseColor.rgb * lightIntensity, 1.0);\n}\n"
 
 /***/ }),
 /* 258 */
@@ -32029,7 +32213,7 @@ module.exports = "#version 300 es\nprecision highp float;\n\n// The vertex shade
 /* 259 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\nprecision highp float;\n\nuniform vec3 u_Eye, u_Ref, u_Up;\nuniform vec2 u_Dimensions;\nuniform float u_Time;\n\nin vec2 fs_Pos;\nout vec4 out_Col;\n\nvoid main() {\n  vec4 blue = vec4(93.0/255.0, 211.0/255.0, 254.0/255.0, 1.0);\n  vec4 darkBlue = vec4(0.0, 119.0/255.0, 163.0/255.0, 1.0);\n  out_Col = vec4(0.5 * (fs_Pos + vec2(1.0)), 0.0, 1.0);\n  out_Col = mix(darkBlue, blue, fs_Pos.y);\n}\n"
+module.exports = "#version 300 es\nprecision highp float;\n\nuniform vec3 u_Eye, u_Ref, u_Up;\nuniform vec2 u_Dimensions;\nuniform float u_Time;\n\nin vec2 fs_Pos;\nout vec4 out_Col;\n\n//SETTINGS//\nconst float cloudscale = 1.0;\nconst float speed = 0.0003;\nconst float clouddark = 0.5;\nconst float cloudlight = 0.3;\nconst float cloudcover = 0.1;\nconst float cloudalpha = 3.0;\nconst float skytint = 0.7;\n//SETTINGS//\n\nconst mat2 m = mat2( 1.6,  1.2, -1.2,  1.6 );\n\nvec2 hash( vec2 p ) {\n\tp = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));\n\treturn -1.0 + 2.0*fract(sin(p)*43758.5453123);\n}\n\nfloat noise( in vec2 p ) {\n    const float K1 = 0.366025404; // (sqrt(3)-1)/2;\n    const float K2 = 0.211324865; // (3-sqrt(3))/6;\n\tvec2 i = floor(p + (p.x+p.y)*K1);\t\n    vec2 a = p - i + (i.x+i.y)*K2;\n    vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0); //vec2 of = 0.5 + 0.5*vec2(sign(a.x-a.y), sign(a.y-a.x));\n    vec2 b = a - o + K2;\n\tvec2 c = a - 1.0 + 2.0*K2;\n    vec3 h = max(0.5-vec3(dot(a,a), dot(b,b), dot(c,c) ), 0.0 );\n\tvec3 n = h*h*h*h*vec3( dot(a,hash(i+0.0)), dot(b,hash(i+o)), dot(c,hash(i+1.0)));\n    return dot(n, vec3(70.0));\t\n}\n\nfloat fbm(vec2 n) {\n\tfloat total = 0.0, amplitude = 0.1;\n\tfor (int i = 0; i < 7; i++) {\n\t\ttotal += noise(n) * amplitude;\n\t\tn = m * n;\n\t\tamplitude *= 0.4;\n\t}\n\treturn total;\n}\n\nvoid main() {\n  vec3 blue = vec3(93.0/255.0, 211.0/255.0, 254.0/255.0);\n  vec3 darkBlue = vec3(0.0, 119.0/255.0, 163.0/255.0);\n  vec3 skyCol = mix(darkBlue, blue, fs_Pos.y);\n\n  vec2 p = fs_Pos;\n\tvec2 uv = fs_Pos;    \n  float time = u_Time * speed;\n  float q = fbm(uv * cloudscale * 0.5);\n    \n  //ridged noise shape\n\tfloat r = 0.0;\n\tuv *= cloudscale;\n  uv -= q - time;\n  float weight = 0.8;\n  for (int i=0; i<8; i++){\n  r += abs(weight*noise( uv ));\n      uv = m*uv + time;\n  weight *= 0.7;\n  }\n    \n  //noise shape\n\tfloat f = 0.1;\n  uv = fs_Pos;\n\tuv *= cloudscale;\n  uv -= q - time;\n  weight = 0.8;\n  for (int i=0; i<5; i++){\n    f += weight*noise( uv );\n    uv = m*uv + time;\n      weight *= 0.6;\n  }\n  \n  f *= r + f;\n  \n  //noise colour\n  float c = 0.0;\n  time = u_Time * speed * 2.0;\n  uv = fs_Pos;\n  uv *= cloudscale*2.0;\n  uv -= q - time;\n  weight = 0.7;\n  for (int i=0; i<7; i++){\n    c += weight*noise( uv );\n    uv = m*uv + time;\n    weight *= 0.6;\n  }\n    \n  //noise ridge colour\n  float c1 = 0.0;\n  time = u_Time * speed * 3.0;\n  uv = fs_Pos;\n  uv *= cloudscale * 3.0;\n  uv -= q - time;\n  weight = 0.4;\n  for (int i=0; i<7; i++){\n    c1 += abs(weight*noise( uv ));\n    uv = m*uv + time;\n    weight *= 0.6;\n  }\n\n  c += c1;\n  \n  vec3 cloudcolour = vec3(1.1, 1.1, 0.9) * clamp((clouddark + cloudlight*c), 0.0, 1.0);\n  \n  f = cloudcover + cloudalpha*f*r;\n  \n  vec3 result = mix(skyCol, clamp(skytint * skyCol + cloudcolour, 0.0, 1.0), clamp(f + c, 0.0, 1.0));\n\n  out_Col = vec4(result, 1.0);\n}\n"
 
 /***/ })
 /******/ ]);
