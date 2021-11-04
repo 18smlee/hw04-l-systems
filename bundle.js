@@ -11850,7 +11850,7 @@ let screenQuad;
 let time = 0.0;
 let plantCylinderOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/plantCylinder.obj');
 let plantCylinder;
-let leafOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/leaf.obj');
+let leafOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/leafPlane.obj');
 let leaf;
 let potOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/pot.obj');
 let pot;
@@ -22521,11 +22521,12 @@ class ShaderProgram {
         // Textures
         this.unifBarkTexture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_barkTexture");
         this.unifLeafTexture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_leafTexture");
+        this.unifLeafTexture2 = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_leafTexture2");
         this.unifPotTexture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_potTexture");
         this.unifGroundTexture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_groundTexture");
+        this.unifMulchTexture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_mulchTexture");
         this.unifAppleTexture1 = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_appleTexture1");
         this.unifAppleTexture2 = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_appleTexture2");
-        this.unifMulchTexture = __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].getUniformLocation(this.prog, "u_mulchTexture");
     }
     use() {
         if (activeProgram !== this.prog) {
@@ -22568,7 +22569,8 @@ class ShaderProgram {
     setTextures() {
         this.use();
         this.barkTexture = this.createTexture('./src/textures/bark.jpg');
-        this.leafTexture = this.createTexture('./src/textures/leaf.jpg');
+        this.leafTexture = this.createTexture('./src/textures/leaf1.png');
+        this.leafTexture2 = this.createTexture('./src/textures/leaf9.png');
         this.potTexture = this.createTexture('./src/textures/terracotta.jpg');
         this.groundTexture = this.createTexture('./src/textures/ground.jpg');
         this.appleTexture1 = this.createTexture('./src/textures/apple1.jpg');
@@ -22578,9 +22580,10 @@ class ShaderProgram {
         __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifLeafTexture, 1);
         __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifPotTexture, 2);
         __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifGroundTexture, 3);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifAppleTexture1, 4);
-        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifMulchTexture, 5);
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifMulchTexture, 4);
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifAppleTexture1, 5);
         __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifAppleTexture2, 6);
+        __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifLeafTexture2, 7);
     }
     setEyeRefUp(eye, ref, up) {
         this.use();
@@ -22708,20 +22711,25 @@ class ShaderProgram {
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.groundTexture);
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifGroundTexture, 3);
         }
-        if (this.unifAppleTexture1 != -1) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE4); //GL supports up to 32 different active textures at once(0 - 31)
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.appleTexture1);
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifAppleTexture1, 4);
-        }
         if (this.unifMulchTexture != -1) {
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE5); //GL supports up to 32 different active textures at once(0 - 31)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE4); //GL supports up to 32 different active textures at once(0 - 31)
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.mulchTexture);
-            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifMulchTexture, 5);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifMulchTexture, 4);
+        }
+        if (this.unifAppleTexture1 != -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE5); //GL supports up to 32 different active textures at once(0 - 31)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.appleTexture1);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifAppleTexture1, 5);
         }
         if (this.unifAppleTexture2 != -1) {
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE6); //GL supports up to 32 different active textures at once(0 - 31)
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.appleTexture2);
             __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifAppleTexture2, 6);
+        }
+        if (this.unifLeafTexture2 != -1) {
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].activeTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE7); //GL supports up to 32 different active textures at once(0 - 31)
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].bindTexture(__WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].TEXTURE_2D, this.leafTexture2);
+            __WEBPACK_IMPORTED_MODULE_1__globals__["a" /* gl */].uniform1i(this.unifLeafTexture2, 7);
         }
         d.bindIdx();
         // drawElementsInstanced uses the vertexAttribDivisor for each "in" variable to
@@ -32201,7 +32209,7 @@ module.exports = "#version 300 es\n\nuniform mat4 u_ViewProj;\nuniform float u_T
 /* 257 */
 /***/ (function(module, exports) {
 
-module.exports = "#version 300 es\nprecision highp float;\n\nin vec4 fs_Col;\nin vec4 fs_Pos;\nin vec4 fs_Nor;\nin vec4 fs_LightVec;\nin vec2 fs_UV;\nin vec4 fs_MeshId;\nin vec4 fs_InstanceId;\n\nout vec4 out_Col;\nuniform sampler2D u_barkTexture;\nuniform sampler2D u_leafTexture;\nuniform sampler2D u_potTexture;\nuniform sampler2D u_groundTexture;\nuniform sampler2D u_appleTexture1;\nuniform sampler2D u_appleTexture2;\nuniform sampler2D u_mulchTexture;\n\nfloat rand(vec2 co){\n    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);\n}\n\nvoid main()\n{\n    vec4 diffuseColor = fs_Col;\n\n    // Draws texture depending on the Mesh Id\n    if (fs_MeshId[0] == 0.0) {\n        diffuseColor = texture(u_barkTexture, fs_UV);\n    } else if (fs_MeshId[0] == 1.0) {\n        diffuseColor = texture(u_leafTexture, fs_UV);\n    } else if (fs_MeshId[0] == 2.0) {\n        diffuseColor = texture(u_potTexture, fs_UV);\n    } else if (fs_MeshId[0] == 3.0) {\n        diffuseColor = texture(u_groundTexture, fs_UV);\n    } else if (fs_MeshId[0] == 4.0) {\n        float appleProb = rand(fs_InstanceId.xy);\n        if (appleProb < 0.5) {\n            diffuseColor = texture(u_appleTexture1, fs_UV);\n        } else {\n            diffuseColor = texture(u_appleTexture2, fs_UV);\n        }\n        //diffuseColor = texture(u_appleTexture1, fs_UV);\n\n    } else if (fs_MeshId[0] == 5.0) {\n        diffuseColor = texture(u_mulchTexture, fs_UV);\n    }\n   \n    float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));\n    diffuseTerm = clamp(diffuseTerm, 0.0, 1.0);\n    float ambientTerm = 0.4;\n    float lightIntensity = diffuseTerm + ambientTerm;\n\n    out_Col = vec4(diffuseColor.rgb * lightIntensity, 1.0);\n}\n"
+module.exports = "#version 300 es\nprecision highp float;\n\nin vec4 fs_Col;\nin vec4 fs_Pos;\nin vec4 fs_Nor;\nin vec4 fs_LightVec;\nin vec2 fs_UV;\nin vec4 fs_MeshId;\nin vec4 fs_InstanceId;\n\nout vec4 out_Col;\nuniform sampler2D u_barkTexture;\nuniform sampler2D u_leafTexture;\nuniform sampler2D u_leafTexture2;\nuniform sampler2D u_potTexture;\nuniform sampler2D u_groundTexture;\nuniform sampler2D u_appleTexture1;\nuniform sampler2D u_appleTexture2;\nuniform sampler2D u_mulchTexture;\n\nfloat rand(vec2 co){\n    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);\n}\n\nvoid main()\n{\n    vec4 diffuseColor = fs_Col;\n\n    // Draws texture depending on the Mesh Id\n    if (fs_MeshId[0] == 0.0) {\n        diffuseColor = texture(u_barkTexture, fs_UV);\n    } else if (fs_MeshId[0] == 1.0) {\n        float leafProb = rand(fs_InstanceId.xy);\n        if (leafProb < 0.5) {\n            diffuseColor = texture(u_leafTexture, fs_UV);\n        } else {\n            diffuseColor = texture(u_leafTexture2, fs_UV);\n        }\n        float alpha = diffuseColor.w;\n        if(diffuseColor.w < 0.3) {\n            discard;\n        } else {\n            alpha = 1.0;\n        }\n    } else if (fs_MeshId[0] == 2.0) {\n        diffuseColor = texture(u_potTexture, fs_UV);\n    } else if (fs_MeshId[0] == 3.0) {\n        diffuseColor = texture(u_groundTexture, fs_UV);\n    } else if (fs_MeshId[0] == 4.0) {\n        float appleProb = rand(fs_InstanceId.xy);\n        if (appleProb < 0.5) {\n            diffuseColor = texture(u_appleTexture1, fs_UV);\n        } else {\n            diffuseColor = texture(u_appleTexture2, fs_UV);\n        }\n        //diffuseColor = texture(u_appleTexture1, fs_UV);\n\n    } else if (fs_MeshId[0] == 5.0) {\n        diffuseColor = texture(u_mulchTexture, fs_UV);\n    }\n   \n    float diffuseTerm = dot(normalize(fs_Nor), normalize(fs_LightVec));\n    diffuseTerm = clamp(diffuseTerm, 0.0, 1.0);\n    float ambientTerm = 0.4;\n    float lightIntensity = diffuseTerm + ambientTerm;\n\n    out_Col = vec4(diffuseColor.rgb * lightIntensity, 1.0);\n}\n"
 
 /***/ }),
 /* 258 */
