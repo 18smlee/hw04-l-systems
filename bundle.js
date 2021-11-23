@@ -11858,7 +11858,7 @@ let dirtOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile 
 let dirt;
 let groundOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/grass.obj');
 let ground;
-let appleOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('./src/geometry/apple.obj');
+let appleOBJ = Object(__WEBPACK_IMPORTED_MODULE_7__globals__["b" /* readTextFile */])('https://raw.githubusercontent.com/18smlee/hw04-l-systems/master/src/geometry/apple.obj');
 let apple;
 function loadScene(seed, branchThickness, appleDensity) {
     square = new __WEBPACK_IMPORTED_MODULE_3__geometry_Square__["a" /* default */]();
